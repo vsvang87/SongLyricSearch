@@ -2,6 +2,7 @@ const form = document.getElementById("form");
 const search = document.getElementById("search");
 const result = document.getElementById("result");
 const errorMessage = document.getElementById("error-message");
+const more = document.getElementById("more");
 const apiUrl = "https://api.lyrics.ovh";
 
 //search song or artist
@@ -30,17 +31,17 @@ function showData(data) {
   ${display}
   </ul>
   `;
-  //checking prev and next button
+  //checking for more pages using prev and next button
   if (data.prev || data.next) {
     more.innerHTML = `
     ${
       data.prev
-        ? `<button class="btn" onclick="getMoreSong('${data.prev}')">Prev</button>`
+        ? `<button class="btn" onclick="getMoreSongs('${data.prev}')">Prev</button>`
         : ""
     }
     ${
       data.next
-        ? `<button class="btn" onclick="getMoreSong('${data.next}')">Next</button>`
+        ? `<button class="btn" onclick="getMoreSongs('${data.next}')">Next</button>`
         : ""
     } 
     `;
@@ -49,20 +50,24 @@ function showData(data) {
   }
 }
 //get prev or next songs
-async function getMoreSong(url) {
-  const response = await fetch(`https://cors-anywhere.herokuapp.com/${url}/`);
-  const data = await response.json();
-  console.log(data);
+async function getMoreSongs(url) {
+  const res = await fetch(`https://cors-anywhere.herokuapp.com/${url}`);
+  const data = await res.json();
+
   showData(data);
 }
 //Get lyrics for song
 async function getLyrics(artist, songTitle) {
-  const response = await fetch(`${apiUrl}/v1/${artist}/${songTitle}`);
+  const response = await fetch(
+    `https://api.lyrics.ovh/v1/${artist}/${songTitle}`
+  );
   const data = await response.json();
-
+  console.log(data);
+  //getting lyrics back formatted
   const lyrics = data.lyrics.replace(/(\r\n|\r|\n)/g, "<br>");
 
-  result.innerHTML = `<h2><strong>${artist}</strong> - ${sontTitle}</h2>`;
+  result.innerHTML = `<h2><strong>${artist}</strong> - ${songTitle}</h2><span>${lyrics}</span>`;
+  more.innerHTML = "";
 }
 
 //form, search Input value
